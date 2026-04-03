@@ -44,7 +44,7 @@ func main() {
 		StrictRouting: true,
 		ServerHeader:  "Fiber",
 		AppName:       "Video Caching Service",
-		BodyLimit:     1000 * 1024 * 1024, // 1000MB
+		BodyLimit:     100* 1024 * 1024, // 1000MB
 	})
 
 	app.Use(cors.New(cors.Config{

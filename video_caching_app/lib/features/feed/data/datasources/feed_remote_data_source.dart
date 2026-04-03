@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/video_model.dart';
+import 'package:get_storage/get_storage.dart';
 
 abstract class FeedRemoteDataSource {
   Future<List<VideoModel>> getFeed({String? cursor});
@@ -14,7 +15,10 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   FeedRemoteDataSourceImpl(this._dio);
 
-  static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://localhost:8000/api');
+  static final String _baseUrl = dotenv.get(
+    'API_BASE_URL',
+    fallback: 'http://localhost:8000/api',
+  );
 
   @override
   Future<List<VideoModel>> getFeed({String? cursor}) async {
@@ -40,6 +44,17 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<VideoModel> uploadVideo(String filePath) async {
+
+    final storage = GetStorage();
+    
+    final String? token = storage.read(
+      'auth_token',
+    ); 
+
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
+
     final formData = FormData.fromMap({
       'video': await MultipartFile.fromFile(
         filePath,
@@ -50,6 +65,11 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     final response = await _dio.post(
       '$_baseUrl/videos/upload',
       data: formData,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
     );
 
     return VideoModel.fromJson(response.data);

@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"io"
+	"log"
 
 	"github.com/bste101/video-caching-backend/internal/usecase"
 	"github.com/gofiber/fiber/v3"
@@ -55,27 +56,50 @@ func (h *VideoHandler) AddView(c fiber.Ctx) error {
 }
 
 func (h *VideoHandler) UploadVideo(c fiber.Ctx) error {
-	userID := c.Locals("user_id").(string)
-	// userID := "de479ba7-52ef-49cf-a976-144a015130b9" // TODO: remove after auth is implemented
+	userIDRaw := c.Locals("user_id")
+	if userIDRaw == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized: User ID not found in token",
+		})
+	}
+
+	userID, ok := userIDRaw.(string)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Server Error: User ID format invalid",
+		})
+	}
 
 	fileHeader, err := c.FormFile("video")
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "video file is required"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "video file is required",
+		})
 	}
+
 	file, err := fileHeader.Open()
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "failed to open video file"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "failed to open video file",
+		})
 	}
 	defer file.Close()
 
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "failed to read video file"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "failed to read video file",
+		})
 	}
 
 	video, err := h.videoUsecase.UploadVideo(userID, fileBytes, fileHeader.Filename)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "failed to upload video"})
+		log.Printf("Upload Error: %v", err) // ปริ้นท์ error ดูใน Console จะได้แก้ง่ายๆ
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "failed to upload video",
+		})
 	}
+
+	// 7. สำเร็จ! ส่งข้อมูลวิดีโอกลับไป
 	return c.JSON(video)
 }
