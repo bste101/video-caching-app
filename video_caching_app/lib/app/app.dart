@@ -15,7 +15,7 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => locator<AuthBloc>()..add(const AuthEvent.authCheckRequested())),
-        BlocProvider(create: (_) => locator<FeedBloc>()..add(const FeedEvent.fetchFeedRequested())),
+        BlocProvider(create: (_) => locator<FeedBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Video Caching App',

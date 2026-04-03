@@ -22,6 +22,12 @@ class _FeedPageState extends State<FeedPage> {
   int _currentIndex = 0;
   final ImagePicker _picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<FeedBloc>().add(const FeedEvent.fetchFeedRequested());
+  }
+
   Future<void> _pickAndUploadVideo() async {
     final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
     if (video != null) {
