@@ -22,9 +22,15 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<List<VideoModel>> getFeed({String? cursor}) async {
+    final storage = GetStorage();
+    final String? token = storage.read('auth_token');
+
     final response = await _dio.get(
       '$_baseUrl/videos/feed',
       queryParameters: cursor != null ? {'cursor': cursor} : null,
+      options: token != null
+          ? Options(headers: {'Authorization': 'Bearer $token'})
+          : null,
     );
 
     final List videosJson = response.data['videos'] ?? [];
@@ -33,13 +39,29 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<bool> toggleLike(String videoId) async {
-    final response = await _dio.post('$_baseUrl/videos/$videoId/like');
+    final storage = GetStorage();
+    final String? token = storage.read('auth_token');
+
+    if (token == null) throw Exception('User not authenticated');
+
+    final response = await _dio.post(
+      '$_baseUrl/videos/$videoId/like',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
     return response.data['liked'] ?? false;
   }
 
   @override
   Future<void> addView(String videoId) async {
-    await _dio.post('$_baseUrl/videos/$videoId/views');
+    final storage = GetStorage();
+    final String? token = storage.read('auth_token');
+
+    await _dio.post(
+      '$_baseUrl/videos/$videoId/views',
+      options: token != null
+          ? Options(headers: {'Authorization': 'Bearer $token'})
+          : null,
+    );
   }
 
   @override

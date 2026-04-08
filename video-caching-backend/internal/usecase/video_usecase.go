@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/bste101/video-caching-backend/pkg/cache"
@@ -31,35 +32,67 @@ func NewVideoUsecase(repo *repository.VideoRepository, db *gorm.DB, redis *cache
 	}
 }
 
-func (u *VideoUsecase) GetFeed(cursorStr string) ([]model.Video, string, error) {
+func (u *VideoUsecase) GetFeed(cursorStr string, userID string) ([]model.Video, string, error) {
 
 	cacheKey := "feed:" + cursorStr
 
 	// 🔥 1. try cache
+	var videos []model.Video
+	var nextCursor string
+
 	val, err := u.redis.Client.Get(cache.Ctx, cacheKey).Result()
 	if err == nil {
 		var cached struct {
 			Videos     []model.Video
 			NextCursor string
 		}
-		json.Unmarshal([]byte(val), &cached)
-
-		return cached.Videos, cached.NextCursor, nil
+		if err := json.Unmarshal([]byte(val), &cached); err == nil {
+			videos = cached.Videos
+			nextCursor = cached.NextCursor
+		}
 	}
 
-	// ❌ cache miss → query DB
-	videos, nextCursor, err := u.getFeedFromDB(cursorStr)
-	if err != nil {
-		return nil, "", err
+	if videos == nil {
+		// ❌ cache miss → query DB
+		videos, nextCursor, err = u.getFeedFromDB(cursorStr)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// 🔥 2. save cache
+		data, _ := json.Marshal(map[string]interface{}{
+			"videos":     videos,
+			"nextCursor": nextCursor,
+		})
+
+		u.redis.Client.Set(cache.Ctx, cacheKey, data, 30*time.Second)
 	}
 
-	// 🔥 2. save cache
-	data, _ := json.Marshal(map[string]interface{}{
-		"videos":     videos,
-		"nextCursor": nextCursor,
-	})
+	// 🔥 3. If userID is provided, check like status for each video
+	if userID != "" && len(videos) > 0 {
+		videoIDs := make([]string, len(videos))
+		for i, v := range videos {
+			videoIDs[i] = v.ID
+		}
 
-	u.redis.Client.Set(cache.Ctx, cacheKey, data, 30*time.Second)
+		var likedVideoIDs []string
+		if err := u.db.Table("likes").
+			Where("user_id = ? AND video_id IN ?", userID, videoIDs).
+			Pluck("video_id", &likedVideoIDs).Error; err != nil {
+			return nil, "", err
+		}
+
+		likedMap := make(map[string]bool)
+		for _, id := range likedVideoIDs {
+			likedMap[id] = true
+		}
+
+		// We need to make sure we are not modifying the original slice if it's cached,
+		// but since we unmarshaled it from JSON, it's a new slice.
+		for i := range videos {
+			videos[i].IsLiked = likedMap[videos[i].ID]
+		}
+	}
 
 	return videos, nextCursor, nil
 }
@@ -145,11 +178,16 @@ func (u *VideoUsecase) UploadVideo(userID string, fileData []byte, filename stri
 	}
 	fmt.Printf("Video uploaded to MinIO: %s\n", objectName)
 
+	baseURL := os.Getenv("VIDEO_BASE_URL")
+	if baseURL == "" {
+		baseURL = "http://localhost:9000/videos/"
+	}
+
 	// 2. save video record to DB
 	video := model.Video{
 		ID:        uuid.New().String(),
 		UserID:    userID,
-		VideoURL:  "http://minio:9000/video-bucket/" + objectName,
+		VideoURL:  baseURL + filename,
 		LikeCount: 0,
 		ViewCount: 0,
 	}

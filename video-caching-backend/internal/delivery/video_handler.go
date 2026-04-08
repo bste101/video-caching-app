@@ -3,8 +3,10 @@ package delivery
 import (
 	"io"
 	"log"
+	"strings"
 
 	"github.com/bste101/video-caching-backend/internal/usecase"
+	"github.com/bste101/video-caching-backend/pkg/jwt"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -20,7 +22,18 @@ func (h *VideoHandler) GetFeed(c fiber.Ctx) error {
 
 	cursor := c.Query("cursor")
 
-	videos, nextCursor, err := h.videoUsecase.GetFeed(cursor)
+	// Extract userID from token if provided (optional for public feed)
+	var userID string
+	authHeader := c.Get("Authorization")
+	if authHeader != "" {
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		claims, err := jwt.ParseJWT(tokenStr)
+		if err == nil {
+			userID = claims.UserID
+		}
+	}
+
+	videos, nextCursor, err := h.videoUsecase.GetFeed(cursor, userID)
 	if err != nil {
 		return c.SendStatus(500)
 	}

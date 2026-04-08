@@ -33,9 +33,41 @@ func NewMinio() (*MinioClient, error) {
 		return nil, err
 	}
 
+	bucketName := "videos"
+	ctx := context.Background()
+	exists, err := client.BucketExists(ctx, bucketName)
+	if err == nil && !exists {
+		err = client.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+		if err != nil {
+			return nil, err
+		}
+		// Set public policy
+		policy := `{
+			"Version": "2012-10-17",
+			"Statement": [
+				{
+					"Action": ["s3:GetBucketLocation", "s3:ListBucket"],
+					"Effect": "Allow",
+					"Principal": {"AWS": ["*"]},
+					"Resource": ["arn:aws:s3:::` + bucketName + `"]
+				},
+				{
+					"Action": ["s3:GetObject"],
+					"Effect": "Allow",
+					"Principal": {"AWS": ["*"]},
+					"Resource": ["arn:aws:s3:::` + bucketName + `/*"]
+				}
+			]
+		}`
+		err = client.SetBucketPolicy(ctx, bucketName, policy)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &MinioClient{
 		Client: client,
-		Bucket: "videos",
+		Bucket: bucketName,
 	}, nil
 }
 

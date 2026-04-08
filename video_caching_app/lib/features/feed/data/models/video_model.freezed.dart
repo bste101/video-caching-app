@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VideoModel {
 
- String get id; String get userId; String get videoUrl; String? get thumbnailUrl; String get caption; int get likeCount; int get viewCount; bool get isLiked;
+ String get id;@JsonKey(name: 'user_id') String get userId; String get videoUrl; String? get thumbnailUrl; String get caption; int get likeCount; int get viewCount; bool get isLiked;
 /// Create a copy of VideoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $VideoModelCopyWith<$Res>  {
   factory $VideoModelCopyWith(VideoModel value, $Res Function(VideoModel) _then) = _$VideoModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, String videoUrl, String? thumbnailUrl, String caption, int likeCount, int viewCount, bool isLiked
+ String id,@JsonKey(name: 'user_id') String userId, String videoUrl, String? thumbnailUrl, String caption, int likeCount, int viewCount, bool isLiked
 });
 
 
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String videoUrl,  String? thumbnailUrl,  String caption,  int likeCount,  int viewCount,  bool isLiked)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId,  String videoUrl,  String? thumbnailUrl,  String caption,  int likeCount,  int viewCount,  bool isLiked)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoModel() when $default != null:
 return $default(_that.id,_that.userId,_that.videoUrl,_that.thumbnailUrl,_that.caption,_that.likeCount,_that.viewCount,_that.isLiked);case _:
@@ -181,7 +181,7 @@ return $default(_that.id,_that.userId,_that.videoUrl,_that.thumbnailUrl,_that.ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String videoUrl,  String? thumbnailUrl,  String caption,  int likeCount,  int viewCount,  bool isLiked)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId,  String videoUrl,  String? thumbnailUrl,  String caption,  int likeCount,  int viewCount,  bool isLiked)  $default,) {final _that = this;
 switch (_that) {
 case _VideoModel():
 return $default(_that.id,_that.userId,_that.videoUrl,_that.thumbnailUrl,_that.caption,_that.likeCount,_that.viewCount,_that.isLiked);case _:
@@ -201,7 +201,7 @@ return $default(_that.id,_that.userId,_that.videoUrl,_that.thumbnailUrl,_that.ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String videoUrl,  String? thumbnailUrl,  String caption,  int likeCount,  int viewCount,  bool isLiked)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String userId,  String videoUrl,  String? thumbnailUrl,  String caption,  int likeCount,  int viewCount,  bool isLiked)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoModel() when $default != null:
 return $default(_that.id,_that.userId,_that.videoUrl,_that.thumbnailUrl,_that.caption,_that.likeCount,_that.viewCount,_that.isLiked);case _:
@@ -216,14 +216,14 @@ return $default(_that.id,_that.userId,_that.videoUrl,_that.thumbnailUrl,_that.ca
 @JsonSerializable()
 
 class _VideoModel implements VideoModel {
-  const _VideoModel({required this.id, required this.userId, required this.videoUrl, this.thumbnailUrl, required this.caption, this.likeCount = 0, this.viewCount = 0, this.isLiked = false});
+  const _VideoModel({required this.id, @JsonKey(name: 'user_id') required this.userId, this.videoUrl = '', this.thumbnailUrl, this.caption = '', this.likeCount = 0, this.viewCount = 0, this.isLiked = false});
   factory _VideoModel.fromJson(Map<String, dynamic> json) => _$VideoModelFromJson(json);
 
 @override final  String id;
-@override final  String userId;
-@override final  String videoUrl;
+@override@JsonKey(name: 'user_id') final  String userId;
+@override@JsonKey() final  String videoUrl;
 @override final  String? thumbnailUrl;
-@override final  String caption;
+@override@JsonKey() final  String caption;
 @override@JsonKey() final  int likeCount;
 @override@JsonKey() final  int viewCount;
 @override@JsonKey() final  bool isLiked;
@@ -261,7 +261,7 @@ abstract mixin class _$VideoModelCopyWith<$Res> implements $VideoModelCopyWith<$
   factory _$VideoModelCopyWith(_VideoModel value, $Res Function(_VideoModel) _then) = __$VideoModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, String videoUrl, String? thumbnailUrl, String caption, int likeCount, int viewCount, bool isLiked
+ String id,@JsonKey(name: 'user_id') String userId, String videoUrl, String? thumbnailUrl, String caption, int likeCount, int viewCount, bool isLiked
 });
 
 

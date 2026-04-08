@@ -7,13 +7,13 @@ part 'video_model.g.dart';
 abstract class VideoModel with _$VideoModel {
   const factory VideoModel({
     required String id,
-    required String userId,
-    required String videoUrl,
+    @JsonKey(name: 'user_id') required String userId,
+    @Default('') String videoUrl,
     String? thumbnailUrl,
-    required String caption,
+    @Default('') String caption,
     @Default(0) int likeCount,
     @Default(0) int viewCount,
-    @Default(false) bool isLiked, // Local UI state
+    @Default(false) bool isLiked,
   }) = _VideoModel;
 
   factory VideoModel.fromJson(Map<String, dynamic> json) =>

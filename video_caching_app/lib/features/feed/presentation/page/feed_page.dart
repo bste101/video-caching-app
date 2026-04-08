@@ -12,20 +12,42 @@ import "../widgets/video_player_widget.dart";
 import "../../data/models/video_model.dart";
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+  final int initialIndex;
+  const FeedPage({super.key, this.initialIndex = 0});
 
   @override
   State<FeedPage> createState() => _FeedPageState();
 }
 
 class _FeedPageState extends State<FeedPage> {
-  int _currentIndex = 0;
+  late int _currentIndex;
   final ImagePicker _picker = ImagePicker();
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    context.read<FeedBloc>().add(const FeedEvent.fetchFeedRequested());
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+    
+    // Check if feed is already loaded, if not fetch it
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final feedBloc = context.read<FeedBloc>();
+      feedBloc.state.maybeWhen(
+        success: (videos, cursor, hasReachedMax) {
+          if (videos.isEmpty) {
+            feedBloc.add(const FeedEvent.fetchFeedRequested());
+          }
+        },
+        orElse: () => feedBloc.add(const FeedEvent.fetchFeedRequested()),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _pickAndUploadVideo() async {
@@ -54,7 +76,7 @@ class _FeedPageState extends State<FeedPage> {
           builder: (context, state) {
             return state.maybeWhen(
               loading: () => const Center(child: CircularProgressIndicator()),
-              failure: (message) => Center(child: Text(message)),
+              failure: (message) => Center(child: Text(message, style: const TextStyle(color: Colors.white))),
               success: (videos, cursor, hasReachedMax) {
                 if (videos.isEmpty) {
                   return Center(
@@ -70,6 +92,7 @@ class _FeedPageState extends State<FeedPage> {
                   );
                 }
                 return PageView.builder(
+                  controller: _pageController,
                   scrollDirection: Axis.vertical,
                   itemCount: videos.length,
                   onPageChanged: (index) {

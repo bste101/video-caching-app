@@ -8,10 +8,10 @@ part of 'video_model.dart';
 
 _VideoModel _$VideoModelFromJson(Map<String, dynamic> json) => _VideoModel(
   id: json['id'] as String,
-  userId: json['userId'] as String,
-  videoUrl: json['videoUrl'] as String,
+  userId: json['user_id'] as String,
+  videoUrl: json['videoUrl'] as String? ?? '',
   thumbnailUrl: json['thumbnailUrl'] as String?,
-  caption: json['caption'] as String,
+  caption: json['caption'] as String? ?? '',
   likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
   viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
   isLiked: json['isLiked'] as bool? ?? false,
@@ -20,7 +20,7 @@ _VideoModel _$VideoModelFromJson(Map<String, dynamic> json) => _VideoModel(
 Map<String, dynamic> _$VideoModelToJson(_VideoModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'userId': instance.userId,
+      'user_id': instance.userId,
       'videoUrl': instance.videoUrl,
       'thumbnailUrl': instance.thumbnailUrl,
       'caption': instance.caption,
