@@ -12,25 +12,18 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     on<ToggleLikeRequested>(_onToggleLikeRequested);
     on<ViewAdded>(_onViewAdded);
     on<UploadVideoRequested>(_onUploadVideoRequested);
+    on<Reset>((event, emit) => emit(const FeedState.initial()));
   }
 
   Future<void> _onUploadVideoRequested(
     UploadVideoRequested event,
     Emitter<FeedState> emit,
   ) async {
-    // We can show a loading state if needed, or just keep current state and show overlay
     try {
-      final newVideo = await _feedRemoteDataSource.uploadVideo(event.filePath);
-      
-      state.mapOrNull(
-        success: (currentState) {
-          emit(currentState.copyWith(
-            videos: [newVideo, ...currentState.videos],
-          ));
-        },
-      );
+      await _feedRemoteDataSource.uploadVideo(event.filePath);
+      // After upload, trigger a full refresh to get the updated feed from server
+      add(const FetchFeedRequested());
     } catch (e) {
-      // Handle error (maybe show a toast or error state)
       print("Upload failed: $e");
     }
   }

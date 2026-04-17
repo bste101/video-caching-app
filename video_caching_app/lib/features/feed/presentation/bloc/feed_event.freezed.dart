@@ -55,7 +55,7 @@ extension FeedEventPatterns on FeedEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( FetchFeedRequested value)?  fetchFeedRequested,TResult Function( FetchMoreFeedRequested value)?  fetchMoreFeedRequested,TResult Function( ToggleLikeRequested value)?  toggleLikeRequested,TResult Function( ViewAdded value)?  viewAdded,TResult Function( UploadVideoRequested value)?  uploadVideoRequested,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( FetchFeedRequested value)?  fetchFeedRequested,TResult Function( FetchMoreFeedRequested value)?  fetchMoreFeedRequested,TResult Function( ToggleLikeRequested value)?  toggleLikeRequested,TResult Function( ViewAdded value)?  viewAdded,TResult Function( UploadVideoRequested value)?  uploadVideoRequested,TResult Function( Reset value)?  reset,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case FetchFeedRequested() when fetchFeedRequested != null:
@@ -63,7 +63,8 @@ return fetchFeedRequested(_that);case FetchMoreFeedRequested() when fetchMoreFee
 return fetchMoreFeedRequested(_that);case ToggleLikeRequested() when toggleLikeRequested != null:
 return toggleLikeRequested(_that);case ViewAdded() when viewAdded != null:
 return viewAdded(_that);case UploadVideoRequested() when uploadVideoRequested != null:
-return uploadVideoRequested(_that);case _:
+return uploadVideoRequested(_that);case Reset() when reset != null:
+return reset(_that);case _:
   return orElse();
 
 }
@@ -81,7 +82,7 @@ return uploadVideoRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( FetchFeedRequested value)  fetchFeedRequested,required TResult Function( FetchMoreFeedRequested value)  fetchMoreFeedRequested,required TResult Function( ToggleLikeRequested value)  toggleLikeRequested,required TResult Function( ViewAdded value)  viewAdded,required TResult Function( UploadVideoRequested value)  uploadVideoRequested,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( FetchFeedRequested value)  fetchFeedRequested,required TResult Function( FetchMoreFeedRequested value)  fetchMoreFeedRequested,required TResult Function( ToggleLikeRequested value)  toggleLikeRequested,required TResult Function( ViewAdded value)  viewAdded,required TResult Function( UploadVideoRequested value)  uploadVideoRequested,required TResult Function( Reset value)  reset,}){
 final _that = this;
 switch (_that) {
 case FetchFeedRequested():
@@ -89,7 +90,8 @@ return fetchFeedRequested(_that);case FetchMoreFeedRequested():
 return fetchMoreFeedRequested(_that);case ToggleLikeRequested():
 return toggleLikeRequested(_that);case ViewAdded():
 return viewAdded(_that);case UploadVideoRequested():
-return uploadVideoRequested(_that);case _:
+return uploadVideoRequested(_that);case Reset():
+return reset(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -106,7 +108,7 @@ return uploadVideoRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( FetchFeedRequested value)?  fetchFeedRequested,TResult? Function( FetchMoreFeedRequested value)?  fetchMoreFeedRequested,TResult? Function( ToggleLikeRequested value)?  toggleLikeRequested,TResult? Function( ViewAdded value)?  viewAdded,TResult? Function( UploadVideoRequested value)?  uploadVideoRequested,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( FetchFeedRequested value)?  fetchFeedRequested,TResult? Function( FetchMoreFeedRequested value)?  fetchMoreFeedRequested,TResult? Function( ToggleLikeRequested value)?  toggleLikeRequested,TResult? Function( ViewAdded value)?  viewAdded,TResult? Function( UploadVideoRequested value)?  uploadVideoRequested,TResult? Function( Reset value)?  reset,}){
 final _that = this;
 switch (_that) {
 case FetchFeedRequested() when fetchFeedRequested != null:
@@ -114,7 +116,8 @@ return fetchFeedRequested(_that);case FetchMoreFeedRequested() when fetchMoreFee
 return fetchMoreFeedRequested(_that);case ToggleLikeRequested() when toggleLikeRequested != null:
 return toggleLikeRequested(_that);case ViewAdded() when viewAdded != null:
 return viewAdded(_that);case UploadVideoRequested() when uploadVideoRequested != null:
-return uploadVideoRequested(_that);case _:
+return uploadVideoRequested(_that);case Reset() when reset != null:
+return reset(_that);case _:
   return null;
 
 }
@@ -131,14 +134,15 @@ return uploadVideoRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  fetchFeedRequested,TResult Function()?  fetchMoreFeedRequested,TResult Function( String videoId)?  toggleLikeRequested,TResult Function( String videoId)?  viewAdded,TResult Function( String filePath)?  uploadVideoRequested,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  fetchFeedRequested,TResult Function()?  fetchMoreFeedRequested,TResult Function( String videoId)?  toggleLikeRequested,TResult Function( String videoId)?  viewAdded,TResult Function( String filePath)?  uploadVideoRequested,TResult Function()?  reset,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case FetchFeedRequested() when fetchFeedRequested != null:
 return fetchFeedRequested();case FetchMoreFeedRequested() when fetchMoreFeedRequested != null:
 return fetchMoreFeedRequested();case ToggleLikeRequested() when toggleLikeRequested != null:
 return toggleLikeRequested(_that.videoId);case ViewAdded() when viewAdded != null:
 return viewAdded(_that.videoId);case UploadVideoRequested() when uploadVideoRequested != null:
-return uploadVideoRequested(_that.filePath);case _:
+return uploadVideoRequested(_that.filePath);case Reset() when reset != null:
+return reset();case _:
   return orElse();
 
 }
@@ -156,14 +160,15 @@ return uploadVideoRequested(_that.filePath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  fetchFeedRequested,required TResult Function()  fetchMoreFeedRequested,required TResult Function( String videoId)  toggleLikeRequested,required TResult Function( String videoId)  viewAdded,required TResult Function( String filePath)  uploadVideoRequested,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  fetchFeedRequested,required TResult Function()  fetchMoreFeedRequested,required TResult Function( String videoId)  toggleLikeRequested,required TResult Function( String videoId)  viewAdded,required TResult Function( String filePath)  uploadVideoRequested,required TResult Function()  reset,}) {final _that = this;
 switch (_that) {
 case FetchFeedRequested():
 return fetchFeedRequested();case FetchMoreFeedRequested():
 return fetchMoreFeedRequested();case ToggleLikeRequested():
 return toggleLikeRequested(_that.videoId);case ViewAdded():
 return viewAdded(_that.videoId);case UploadVideoRequested():
-return uploadVideoRequested(_that.filePath);case _:
+return uploadVideoRequested(_that.filePath);case Reset():
+return reset();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -180,14 +185,15 @@ return uploadVideoRequested(_that.filePath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  fetchFeedRequested,TResult? Function()?  fetchMoreFeedRequested,TResult? Function( String videoId)?  toggleLikeRequested,TResult? Function( String videoId)?  viewAdded,TResult? Function( String filePath)?  uploadVideoRequested,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  fetchFeedRequested,TResult? Function()?  fetchMoreFeedRequested,TResult? Function( String videoId)?  toggleLikeRequested,TResult? Function( String videoId)?  viewAdded,TResult? Function( String filePath)?  uploadVideoRequested,TResult? Function()?  reset,}) {final _that = this;
 switch (_that) {
 case FetchFeedRequested() when fetchFeedRequested != null:
 return fetchFeedRequested();case FetchMoreFeedRequested() when fetchMoreFeedRequested != null:
 return fetchMoreFeedRequested();case ToggleLikeRequested() when toggleLikeRequested != null:
 return toggleLikeRequested(_that.videoId);case ViewAdded() when viewAdded != null:
 return viewAdded(_that.videoId);case UploadVideoRequested() when uploadVideoRequested != null:
-return uploadVideoRequested(_that.filePath);case _:
+return uploadVideoRequested(_that.filePath);case Reset() when reset != null:
+return reset();case _:
   return null;
 
 }
@@ -456,5 +462,37 @@ as String,
 
 
 }
+
+/// @nodoc
+
+
+class Reset implements FeedEvent {
+  const Reset();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Reset);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FeedEvent.reset()';
+}
+
+
+}
+
+
+
 
 // dart format on

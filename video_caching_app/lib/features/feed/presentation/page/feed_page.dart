@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
-import "package:image_picker/image_picker.dart";
 import "package:go_router/go_router.dart";
 import "package:video_caching_app/features/auth/presentation/bloc/auth_bloc.dart";
 import "package:video_caching_app/features/auth/presentation/bloc/auth_event.dart";
@@ -21,7 +20,6 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   late int _currentIndex;
-  final ImagePicker _picker = ImagePicker();
   late PageController _pageController;
 
   @override
@@ -48,17 +46,6 @@ class _FeedPageState extends State<FeedPage> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickAndUploadVideo() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      if (!mounted) return;
-      context.read<FeedBloc>().add(FeedEvent.uploadVideoRequested(video.path));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Uploading video...")),
-      );
-    }
   }
 
   @override
@@ -124,43 +111,52 @@ class _FeedPageState extends State<FeedPage> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _pickAndUploadVideo,
-          backgroundColor: Colors.pinkAccent,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
       ),
     );
   }
 
   Widget _buildTopBar(BuildContext context) {
+    final canPop = context.canPop();
     return Positioned(
       top: 40,
+      left: 15,
       right: 15,
-      child: IconButton(
-        icon: const Icon(Icons.logout, color: Colors.white, size: 30),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text("Logout"),
-              content: const Text("Are you sure you want to logout?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel"),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (canPop)
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+              onPressed: () => context.pop(),
+            )
+          else
+            const SizedBox.shrink(),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white, size: 30),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Logout"),
+                  content: const Text("Are you sure you want to logout?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Logout", style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
                 ),
-                TextButton(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Logout", style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

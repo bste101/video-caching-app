@@ -7,6 +7,8 @@ import 'package:video_caching_app/features/auth/presentation/bloc/auth_event.dar
 import 'package:video_caching_app/features/feed/presentation/bloc/feed_bloc.dart';
 import 'package:video_caching_app/features/feed/presentation/bloc/feed_event.dart';
 
+import 'package:video_caching_app/features/auth/presentation/bloc/auth_state.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -17,11 +19,20 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => locator<AuthBloc>()..add(const AuthEvent.authCheckRequested())),
         BlocProvider(create: (_) => locator<FeedBloc>()),
       ],
-      child: MaterialApp.router(
-        title: 'Video Caching App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
-        routerConfig: AppRouter.router,
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            authenticated: (_) => context.read<FeedBloc>().add(const FeedEvent.reset()),
+            unauthenticated: () => context.read<FeedBloc>().add(const FeedEvent.reset()),
+            orElse: () {},
+          );
+        },
+        child: MaterialApp.router(
+          title: 'Video Caching App',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData.dark(),
+          routerConfig: AppRouter.router,
+        ),
       ),
     );
   }

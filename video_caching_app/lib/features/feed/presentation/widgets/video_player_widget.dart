@@ -24,10 +24,16 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
+    _initializeVideoPlayerFuture = _initController();
+  }
+
+  Future<void> _initController() async {
     if (widget.video.videoUrl.isEmpty) {
-      _initializeVideoPlayerFuture = Future.error('Empty video URL');
-      return;
+      throw 'Empty video URL';
     }
+
+    // Give the OS 100ms to release decoders from the previous page (Discovery Grid)
+    await Future.delayed(const Duration(milliseconds: 100));
 
     String finalUrl = widget.video.videoUrl;
     

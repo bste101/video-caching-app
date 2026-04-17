@@ -9,4 +9,5 @@ class FeedEvent with _$FeedEvent {
   const factory FeedEvent.toggleLikeRequested(String videoId) = ToggleLikeRequested;
   const factory FeedEvent.viewAdded(String videoId) = ViewAdded;
   const factory FeedEvent.uploadVideoRequested(String filePath) = UploadVideoRequested;
+  const factory FeedEvent.reset() = Reset;
 }
